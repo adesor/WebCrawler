@@ -1,8 +1,6 @@
 # Web Crawler
 
-
 import urllib2
-
 from bs4 import BeautifulSoup
 
 def get_all_links(page):
@@ -26,9 +24,12 @@ def union(l1,l2):
 def crawling(seed):
     tocrawl = [seed]
     crawled = []
-    while tocrawl:
-        url = tocrawl.pop()
-        if url not in crawled:
-            tocrawl = union(tocrawl,get_all_links(extract_page(url)))
-            crawled.append(url)
+    try:
+        while tocrawl:
+            url = tocrawl.pop()
+            if url not in crawled:
+                tocrawl = union(tocrawl,get_all_links(extract_page(url)))
+                crawled.append(url)
+    except:
+        pass
     return  crawled
