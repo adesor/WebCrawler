@@ -1,6 +1,12 @@
 # Web Crawler
 
 import urllib2
+###
+# urllib is a python module consiting
+# of important url related functions
+# which are helpful in Web Crawler's working.
+###
+
 from bs4 import BeautifulSoup
 
 def get_all_links(page):
@@ -26,7 +32,9 @@ def crawling(seed):
     crawled = []
     try:
         while tocrawl:
-            url = tocrawl.pop()
+            url = tocrawl.pop(0)
+            if url.find("http") == -1:
+                url = seed+"/"+url
             if url not in crawled:
                 tocrawl = union(tocrawl,get_all_links(extract_page(url)))
                 crawled.append(url)
