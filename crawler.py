@@ -2,6 +2,7 @@
 
 import urllib2
 from bs4 import BeautifulSoup
+from urlparse import urlparse, urljoin
 
 ###
 # urllib is a python module consiting
@@ -16,14 +17,20 @@ def get_all_links(page,seed):
     links = []
     for link in page.find_all('a'):
         url = (link.get('href'))
-        if url.find("http") == -1:
-            url = seed+"/"+url
-        links.append(str(url))
+        if url:
+            parse_url = urlparse(url)
+            if not parse_url.scheme:
+                url = urljoin(seed, url)
+            links.append(url)
     return links
 
 
 def extract_page(seed):
-    soup = BeautifulSoup(urllib2.urlopen(seed).read())
+    try:
+        page = urllib2.urlopen(seed).read()
+    except:
+        page = ""
+    soup = BeautifulSoup(page)
     return soup                
 
 
@@ -36,13 +43,10 @@ def union(l1,l2):
 def crawling(seed):
     tocrawl = [seed]
     crawled = []
-    try:
-        while tocrawl:
-            url = tocrawl.pop(0)
-            if url not in crawled:
-                tocrawl = union(tocrawl,get_all_links(extract_page(url),seed))
-                crawled.append(url)
-                print url
-    except:
-        pass
+    while tocrawl:
+        url = tocrawl.pop(0)
+        if url not in crawled:
+            tocrawl.extend(get_all_links(extract_page(url),url))
+            crawled.append(url)
+            print url
     return  crawled
